@@ -1,0 +1,9 @@
+flask
+pandas
+openpyxl
+torch
+transformers
+gliner @ git+https://github.com/urchade/GLiNER.git
+gunicorn
+sentencepiece
+onnxruntime
