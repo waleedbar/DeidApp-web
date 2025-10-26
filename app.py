@@ -76,7 +76,6 @@ def process_file_route():
     
     return jsonify({'error': 'File not allowed'}), 400
 
+# This part is used for local testing. Hugging Face will use the CMD in the Dockerfile.
 if __name__ == '__main__':
-    # تشغيل الخادم
-    # عند النشر على Render، سيتم استخدام أمر مختلف (gunicorn)، لكن هذا جيد للتجربة المحلية
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=7860)
