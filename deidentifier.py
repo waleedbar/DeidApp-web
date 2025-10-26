@@ -32,26 +32,15 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "gliner", "-q"])
     from gliner import GLiNER
 
-# Install compatible versions if needed
-try:
-    import subprocess
-    print("🔧 Checking and fixing package versions...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "transformers>=4.30.0", "-q"])
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "tokenizers>=0.13.0", "-q"])
-    print("✅ Package versions fixed!")
-except Exception as e:
-    print(f"⚠️ Warning during package update: {e}")
+# The automatic package installation part has been removed. 
+# It's now handled by requirements.txt on the server.
 
 warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# This part related to Google Colab is no longer needed on a server
-# try:
-#     from google.colab import drive
-#     IN_COLAB = True
-# except ImportError:
-#     IN_COLAB = False
+# The Google Colab check is removed as it's not relevant for the server environment.
+IN_COLAB = False
 
 class AdvancedHybridDeidentifierV10_3:
     """
@@ -127,7 +116,6 @@ class AdvancedHybridDeidentifierV10_3:
         names = ["مستشفى البشير", "Al-Basheer Hospital", "Prince Hamza Hospital", "Jordan University Hospital", "King Abdullah University Hospital", "Zarqa New Governmental Hospital", "Prince Faisal Hospital", "Istishari Hospital", "Specialty Hospital", "Jordan Hospital", "Arab Medical Center", "Istiklal Hospital", "Amman Comprehensive Health Center", "Jbaiha Comprehensive Clinic", "AIN AL-BASHA CENTER", "North Hashmi Clinic", "Yarmouk Governmental Hospital", "Ministry of Health", "Zarqa New Hospital", "P.H.H"]
         return r'\b(' + '|'.join(re.escape(name) for name in names) + r')\b'
 
-    # ========================= START: IMPORTANT CHANGE HERE =========================
     def load_models(self):
         logger.info("🔄 [V10.3] Loading The Precision Engine Model Ensemble...")
         # Servers like Render (on the free plan) don't have a GPU, so we default to CPU
@@ -153,7 +141,6 @@ class AdvancedHybridDeidentifierV10_3:
         except Exception as e:
             logger.error(f"❌ Critical error loading models: {e}", exc_info=True)
             raise
-    # ========================== END: IMPORTANT CHANGE HERE ==========================
 
     def extract_entities_regex(self, text: str) -> List[Dict]:
         """
@@ -172,7 +159,6 @@ class AdvancedHybridDeidentifierV10_3:
                 r'(?:رقم وصل كشفيه|National ID|MRN|SSN)\s*:?\s*\(?#?\s*(\d{6,12})\s*\)?',
                 r'\b\d{3}-\d{2}-\d{4}\b'
             ],
-            # ========== V10.3 SURGICAL FIX: PHONE PATTERNS ==========
             'PHONE': [
                 r'(?<![0-9])(?:\+?962|0)\s*7[789][\s-]?\d[\s-]?\d[\s-]?\d[\s-]?\d[\s-]?\d[\s-]?\d[\s-]?\d(?![0-9])',
                 r'(?<![0-9])\+962\s?[6-7](?:[\s-]?\d){7,8}(?![0-9])'
@@ -199,7 +185,6 @@ class AdvancedHybridDeidentifierV10_3:
                 r'\b[\u0600-\u06FF]+,(?:[\u0600-\u06FF]+(?:[\s-]|-?الدين)?)+\b',
                 r'\b(?:ابو|أم)-[\u0600-\u06FF]+(?:,\s?[\u0600-\u06FF]+)+\b'
             ],
-            # ========== V10.3 ENHANCED: ADDRESS PATTERNS ==========
             'ADDRESS': [
                 r'(?:Address|العنوان)\s*:?\s*([^\n]{10,100})',
                 r'[\u0600-\u06FF\s]+-\s*[\u0600-\u06FF\s]+-\s*شارع\s+[\u0600-\u06FF\s]+-\s*عمارة\s+\d+',
@@ -503,9 +488,5 @@ class AdvancedHybridDeidentifierV10_3:
         except Exception as e:
             logger.error(f"❌ A critical error occurred during Excel processing: {e}")
 
-# This part is removed because the file will be run by app.py, not directly
-# def main():
-#     ...
-
-# if __name__ == "__main__":
-#     main()
+# The main() function and the __name__ == "__main__" block are removed 
+# because this file is now a module to be imported by app.py
