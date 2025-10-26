@@ -2,7 +2,7 @@ flask
 pandas
 openpyxl
 torch
-transformers
+transformers==4.51.0
 gliner @ git+https://github.com/urchade/GLiNER.git
 gunicorn
 sentencepiece
